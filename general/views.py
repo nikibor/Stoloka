@@ -8,8 +8,11 @@ from .models import Place
 from .serializers import MapSerializer
 
 
-def is_point_in_area(x1, y1, x2, y2, x, y):
-    if x1 < x < x2 and y1 < y < y2:
+def is_point_in_area(left_top_long, left_top_lan,
+                     right_bot_long, right_bot_lan,
+                     place_long, place_lan):
+    if left_top_long > place_long > right_bot_long \
+            and left_top_lan > place_lan > right_bot_lan:
         return True
     else:
         return False
@@ -46,14 +49,13 @@ class Map(APIView):
         all_places = Place.objects.all()
         places = []
         for place in all_places:
-            if is_point_in_area(x1, y1, x2, y2, float(place.latitude),
-                                float(place.longitude)):
+            if is_point_in_area(x1, y1, x2, y2, float(place.latitude), float(place.longitude)):
                 places.append({
                     'id': place.id,
-                    'longitude': place.longitude,
-                    'latitude': place.latitude,
+                    'longitude': float(place.longitude),
+                    'latitude': float(place.latitude),
                     'title': place.title,
-                    'raiting': place.rating
+                    'raiting': float(place.rating)
                 })
 
         return Response(data={
